@@ -1,0 +1,28 @@
+{
+    "name": "onliner/laravel-command-bus",
+    "type": "library",
+    "description": "Laravel integration for command bus.",
+    "keywords": ["command-bus", "command", "service-bus", "laravel"],
+    "license": "MIT",
+    "require": {
+        "php": ">=7.2",
+        "ext-ctype": "*",
+        "ext-posix": "*",
+        "ext-pcntl": "*",
+        "illuminate/support": ">=5.8",
+        "illuminate/console": ">=5.8",
+        "onliner/command-bus": "^0.1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Onliner\\Laravel\\CommandBus\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Onliner\\Laravel\\CommandBus\\Providers\\CommandBusProvider"
+            ]
+        }
+    }
+}
