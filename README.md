@@ -31,7 +31,7 @@ Configuration
 Publish default configuration file:
 
 ```shell
-artisan vendor:publish --provider=Onliner\Laravel\CommandBus\Providers\CommandBusProvider
+artisan vendor:publish --provider=Onliner\\Laravel\\CommandBus\\Providers\\CommandBusProvider
 ```
 
 and modify for your needs.
