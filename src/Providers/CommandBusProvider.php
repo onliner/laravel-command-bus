@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Onliner\Laravel\CommandBus\Providers;
 
-use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
 use Onliner\CommandBus\Builder;
 use Onliner\CommandBus\Dispatcher;
@@ -101,7 +101,7 @@ class CommandBusProvider extends ServiceProvider
             return TransportFactory::create($dsn, $config['transport']['options'] ?? []);
         });
 
-        $this->app->singleton(RemoteExtension::class, function (Application $app) use ($config) {
+        $this->app->singleton(RemoteExtension::class, function (Container $app) use ($config) {
             $extension = new RemoteExtension($app->get(Transport::class), $app->get(Serializer::class));
             $extension->local(...($config['local'] ?? []));
 
@@ -118,7 +118,7 @@ class CommandBusProvider extends ServiceProvider
      */
     private function registerRetries(array $config): void
     {
-        $this->app->singleton(RetryExtension::class, function (Application $app) use ($config) {
+        $this->app->singleton(RetryExtension::class, function (Container $app) use ($config) {
             $default = isset($config['default']) ? $app->get($config['default']) : null;
             $extension = new RetryExtension($default);
 
@@ -139,7 +139,7 @@ class CommandBusProvider extends ServiceProvider
      */
     private function registerDispatcher(array $handlers): void
     {
-        $this->app->singleton(Dispatcher::class, function (Application $app) use ($handlers) {
+        $this->app->singleton(Dispatcher::class, function (Container $app) use ($handlers) {
             $builder = new Builder();
 
             foreach ($handlers as $command => $class) {
