@@ -29,8 +29,10 @@ class CommandBusProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $configPath = $this->app->basePath('config') . DIRECTORY_SEPARATOR . self::CONFIG_FILENAME;
+
         $this->publishes([
-            __DIR__ . '/../../config/' . self::CONFIG_FILENAME => $this->app->configPath(self::CONFIG_FILENAME),
+            __DIR__ . '/../../config/' . self::CONFIG_FILENAME => $configPath,
         ]);
 
         if ($this->app->runningInConsole()) {
