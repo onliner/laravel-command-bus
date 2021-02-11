@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Onliner\Laravel\CommandBus\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
 use Onliner\CommandBus\Dispatcher;
 use Onliner\CommandBus\Remote\Consumer;
 use Onliner\CommandBus\Remote\Transport;
@@ -54,7 +55,7 @@ class CommandBusProcessCommand extends Command
 
         $this->consumer = $transport->consume();
         $this->consumer->listen($this->argument('pattern'));
-        $this->consumer->run($dispatcher);
+        $this->consumer->run($dispatcher, (array) Config::get('commandbus.consumer.options'));
 
         return 0;
     }

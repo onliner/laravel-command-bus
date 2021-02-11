@@ -19,6 +19,11 @@ return [
                 // 'key' => 'value',
             ],
         ],
+        'consumer' => [
+            'options' => [
+                // 'key' => 'value',
+            ],
+        ],
         'local' => [
             // Command::class,
         ],

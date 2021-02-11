@@ -16,13 +16,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```shell
-composer require onliner/laravel-command-bus:^0.1.0
+composer require onliner/laravel-command-bus
 ```
 
 or add this code line to the `require` section of your `composer.json` file:
 
 ```
-"onliner/laravel-command-bus": "^0.1.0"
+"onliner/laravel-command-bus": "^0.2.0"
 ```
 
 Configuration

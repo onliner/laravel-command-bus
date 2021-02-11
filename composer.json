@@ -11,7 +11,7 @@
         "ext-pcntl": "*",
         "illuminate/support": ">=5.8",
         "illuminate/console": ">=5.8",
-        "onliner/command-bus": "^0.1.0"
+        "onliner/command-bus": "^0.2.0"
     },
     "autoload": {
         "psr-4": {
