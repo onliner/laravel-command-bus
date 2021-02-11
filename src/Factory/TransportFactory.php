@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Onliner\Laravel\CommandBus\Factory;
 
-use Onliner\CommandBus\Remote\Bunny\BunnyTransport;
+use Onliner\CommandBus\Remote\AMQP\AMQPTransport;
 use Onliner\CommandBus\Remote\InMemory\InMemoryTransport;
 use Onliner\CommandBus\Remote\Transport;
 use Onliner\Laravel\CommandBus\Exception;
@@ -23,7 +23,7 @@ class TransportFactory
     {
         switch (parse_url($dsn, PHP_URL_SCHEME)) {
             case 'amqp':
-                return BunnyTransport::create($dsn, $options);
+                return AMQPTransport::create($dsn, $options);
             case 'memory':
                 return new InMemoryTransport();
             default:
