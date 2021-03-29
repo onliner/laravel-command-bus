@@ -11,7 +11,7 @@
         "ext-pcntl": "*",
         "illuminate/support": ">=5.8",
         "illuminate/console": ">=5.8",
-        "onliner/command-bus": "^0.2.4"
+        "onliner/command-bus": "^0.3"
     },
     "autoload": {
         "psr-4": {
@@ -24,8 +24,5 @@
                 "Onliner\\Laravel\\CommandBus\\Providers\\CommandBusProvider"
             ]
         }
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^8.5 || ^9.5"
     }
 }

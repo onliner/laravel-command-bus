@@ -8,8 +8,12 @@ use Onliner\CommandBus\Exception\CommandBusException;
 
 class UnknownTransportException extends CommandBusException
 {
-    public function __construct(string $dsn)
+    /**
+     * @param string $key
+     * @param array $available
+     */
+    public function __construct(string $key, array $available)
     {
-        parent::__construct(sprintf('Unknown transport: %s.', $dsn));
+        parent::__construct(sprintf('Unknown transport "%s". Available: %s', $key, implode(', ', $available)));
     }
 }
