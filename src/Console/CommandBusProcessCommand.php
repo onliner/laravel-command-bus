@@ -7,6 +7,8 @@ namespace Onliner\Laravel\CommandBus\Console;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Onliner\CommandBus\Dispatcher;
+use Onliner\CommandBus\Remote\AMQP\AMQPConsumer;
+use Onliner\CommandBus\Remote\AMQP\Queue;
 use Onliner\CommandBus\Remote\Consumer;
 use Onliner\CommandBus\Remote\Transport;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,7 +20,7 @@ class CommandBusProcessCommand extends Command
     protected $description = '';
 
     /**
-     * @var Consumer
+     * @var Consumer|AMQPConsumer
      */
     private $consumer;
 
@@ -53,9 +55,16 @@ class CommandBusProcessCommand extends Command
         $this->setupUser();
         $this->subscribeSignals();
 
+        $config = (array) Config::get('commandbus.consumer');
+
+        $pattern = $this->argument('pattern');
+
+        $options = $config['queues'][$pattern] ?? [];
+        $options['pattern'] = $pattern;
+
         $this->consumer = $transport->consume();
-        $this->consumer->listen($this->argument('pattern'));
-        $this->consumer->run($dispatcher, (array) Config::get('commandbus.consumer.options'));
+        $this->consumer->consume(Queue::create($options));
+        $this->consumer->run($dispatcher, $config['options'] ?? []);
 
         return 0;
     }

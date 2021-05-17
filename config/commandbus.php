@@ -21,7 +21,16 @@ return [
         ],
         'consumer' => [
             'options' => [
-                // 'key' => 'value',
+                // AMQPConsumer::OPTION_ATTEMPTS => 10,
+                // AMQPConsumer::OPTION_INTERVAL => 1000,
+            ],
+            'queues' => [
+                // 'pattern' => [
+                //     'durable' => true,
+                //     'args' => [
+                //         Queue::MAX_PRIORITY => 3,
+                //     ],
+                // ],
             ],
         ],
         'local' => [
