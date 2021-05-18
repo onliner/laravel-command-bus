@@ -55,11 +55,14 @@ class CommandBusProcessCommand extends Command
         $this->setupUser();
         $this->subscribeSignals();
 
-        $config = (array) Config::get('commandbus.consumer');
+        $config = (array) Config::get('commandbus.remote.consumer');
 
         $pattern = $this->argument('pattern');
 
-        $options = $config['queues'][$pattern] ?? [];
+        $options = $config['queues'][$pattern] ?? [
+            'durable' => true,
+        ];
+
         $options['pattern'] = $pattern;
 
         $this->consumer = $transport->consume();
