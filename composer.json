@@ -4,6 +4,9 @@
     "description": "Laravel integration for command bus.",
     "keywords": ["command-bus", "command", "service-bus", "laravel"],
     "license": "MIT",
+    "repositories": [
+        {"type": "git", "url": "git@github.com:onliner/command-bus.git"}
+    ],
     "require": {
         "php": ">=7.2",
         "ext-ctype": "*",
@@ -11,7 +14,7 @@
         "ext-pcntl": "*",
         "illuminate/support": ">=5.8",
         "illuminate/console": ">=5.8",
-        "onliner/command-bus": "^0.2.0"
+        "onliner/command-bus": "dev-router"
     },
     "autoload": {
         "psr-4": {

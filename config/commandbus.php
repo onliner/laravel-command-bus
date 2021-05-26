@@ -14,9 +14,17 @@ return [
             ],
         ],
         'transport' => [
-            'dsn' => 'memory://',
-            'options' => [
-                // 'key' => 'value',
+            'default' => 'memory',
+            'connections' => [
+                'memory' => [
+                    'url' => 'memory://',
+                    'options' => [
+                        // 'key' => 'value',
+                    ],
+                ],
+            ],
+            'routes' => [
+                '*' => 'memory',
             ],
         ],
         'consumer' => [
