@@ -5,13 +5,13 @@
     "keywords": ["command-bus", "command", "service-bus", "laravel"],
     "license": "MIT",
     "require": {
-        "php": ">=7.2",
+        "php": "^7.2 || ^8.0",
         "ext-ctype": "*",
         "ext-posix": "*",
         "ext-pcntl": "*",
         "illuminate/support": ">=5.8",
         "illuminate/console": ">=5.8",
-        "onliner/command-bus": "^0.2.0"
+        "onliner/command-bus": "^0.2.4"
     },
     "autoload": {
         "psr-4": {
