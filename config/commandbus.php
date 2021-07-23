@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Onliner\CommandBus\Retry\Policy;
+use Onliner\Laravel\CommandBus\Factory\TransportFactory;
 
 return [
     'remote' => [
@@ -14,7 +15,7 @@ return [
             ],
         ],
         'transport' => [
-            'dsn' => 'memory://',
+            'dsn' => TransportFactory::DEFAULT,
             'options' => [
                 // 'key' => 'value',
             ],
