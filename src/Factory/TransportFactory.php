@@ -11,7 +11,7 @@ use Onliner\Laravel\CommandBus\Exception;
 
 class TransportFactory
 {
-    public const DEFAULT = 'memory://';
+    public const DEFAULT = 'memory://memory';
 
     /**
      * @param string $dsn
