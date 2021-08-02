@@ -13,6 +13,7 @@ use Onliner\CommandBus\Remote\Serializer;
 use Onliner\CommandBus\Remote\Transport;
 use Onliner\CommandBus\Retry\RetryExtension;
 use Onliner\Laravel\CommandBus\Console;
+use Onliner\Laravel\CommandBus\Exception;
 use Onliner\Laravel\CommandBus\Factory\SerializerFactory;
 use Onliner\Laravel\CommandBus\Factory\TransportFactory;
 
@@ -20,8 +21,8 @@ class CommandBusProvider extends ServiceProvider
 {
     private const CONFIG_FILENAME = 'commandbus.php';
     private const
-        TAG_EXTENSION  = 'commandbus.extension',
-        TAG_MIDDLEWARE = 'commandbus.middleware'
+        TAG_EXTENSION  = 'onliner.commandbus.extension',
+        TAG_MIDDLEWARE = 'onliner.commandbus.middleware'
     ;
 
     /**
@@ -89,17 +90,8 @@ class CommandBusProvider extends ServiceProvider
             return;
         }
 
-        $this->app->singleton(Serializer::class, function () use ($config) {
-            $type = $config['serializer']['type'] ?? SerializerFactory::DEFAULT;
-
-            return SerializerFactory::create($type, $config['serializer']['options'] ?? []);
-        });
-
-        $this->app->singleton(Transport::class, function () use ($config) {
-            $dsn = $config['transport']['dsn'] ?? TransportFactory::DEFAULT;
-
-            return TransportFactory::create($dsn, $config['transport']['options'] ?? []);
-        });
+        $this->registerTransports($config['transport'] ?? []);
+        $this->registerSerializer($config['serializer'] ?? []);
 
         $this->app->singleton(RemoteExtension::class, function (Container $app) use ($config) {
             $extension = new RemoteExtension($app->get(Transport::class), $app->get(Serializer::class));
@@ -109,6 +101,96 @@ class CommandBusProvider extends ServiceProvider
         });
 
         $this->app->tag(RemoteExtension::class, [self::TAG_EXTENSION]);
+    }
+
+    /**
+     * @param array $config
+     *
+     * @return void
+     */
+    private function registerTransports(array $config): void
+    {
+        $transports = [];
+
+        foreach ($config['connections'] ?? [] as $key => $connection) {
+            $transports[$key] = $this->registerTransportConnection($key, $connection);
+        }
+
+        $this->app->singleton(Transport::class, function (Container $app) use ($config, $transports) {
+            if (empty($transports)) {
+                return (new TransportFactory($app))->default();
+            }
+
+            $default = $config['default'] ?? array_key_first($transports);
+            $transport = new Transport\MultiTransport($this->getTransportInstance($default, $transports));
+
+            foreach ($config['routes'] ?? [] as $pattern => $key) {
+                $transport->add($pattern, $this->getTransportInstance($key, $transports));
+            }
+
+            return $transport;
+        });
+    }
+
+    /**
+     * @param string $key
+     * @param array $transports
+     *
+     * @return Transport
+     */
+    private function getTransportInstance(string $key, array $transports): Transport
+    {
+        if (!isset($transports[$key])) {
+            throw new Exception\UnknownTransportException($key, array_keys($transports));
+        }
+
+        return $this->app->get($transports[$key]);
+    }
+
+    /**
+     * Available config formats:
+     *
+     * [
+     *   'foo' => \App\CommandBus\Transport\RedisTransport::class,
+     *   'bar' => 'app.command_bus.transport.redis',
+     *   'baz' => 'amqp://localhost:5672',
+     *   'qux' => 'memory://memory',
+     *   'quz' => [
+     *     'url' => 'amqp://localhost:5672',
+     *     'options' => [
+     *       'exchange' => 'commands',
+     *     ],
+     *   ],
+     * ]
+     *
+     * @param string $key
+     * @param mixed $config
+     *
+     * @return string
+     */
+    private function registerTransportConnection(string $key, $config): string
+    {
+        $name = sprintf('onliner.commandbus.transport.%s', $key);
+
+        $this->app->singleton($name, function (Container $app) use ($key, $config) {
+            return (new TransportFactory($app))->create($key, $config);
+        });
+
+        return $name;
+    }
+
+    /**
+     * @param array $serializer
+     *
+     * @return void
+     */
+    private function registerSerializer(array $serializer): void
+    {
+        $this->app->singleton(Serializer::class, function () use ($serializer) {
+            $type = $serializer['type'] ?? SerializerFactory::DEFAULT;
+
+            return SerializerFactory::create($type, $serializer['options'] ?? []);
+        });
     }
 
     /**

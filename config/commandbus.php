@@ -15,9 +15,17 @@ return [
             ],
         ],
         'transport' => [
-            'dsn' => TransportFactory::DEFAULT,
-            'options' => [
-                // 'key' => 'value',
+            'default' => 'memory',
+            'connections' => [
+                'memory' => [
+                    'url' => TransportFactory::DEFAULT,
+                    'options' => [
+                        // 'key' => 'value',
+                    ],
+                ],
+            ],
+            'routes' => [
+                '*' => 'memory',
             ],
         ],
         'consumer' => [
