@@ -94,7 +94,7 @@ class CommandBusProcessCommand extends Command
      */
     private function subscribeSignals(): void
     {
-        pcntl_async_signals();
+        pcntl_async_signals(true);
 
         foreach ([SIGINT, SIGTERM] as $signal) {
             pcntl_signal($signal, function () {
