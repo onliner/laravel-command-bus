@@ -172,9 +172,7 @@ class CommandBusProvider extends ServiceProvider
     {
         $name = sprintf('onliner.commandbus.transport.%s', $key);
 
-        $this->app->singleton($name, function (Container $app) use ($key, $config) {
-            return (new TransportFactory($app))->create($key, $config);
-        });
+        $this->app->singleton($name, fn(Container $app) => (new TransportFactory($app))->create($key, $config));
 
         return $name;
     }
