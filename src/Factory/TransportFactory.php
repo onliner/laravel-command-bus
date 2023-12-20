@@ -15,16 +15,10 @@ class TransportFactory
     public const DEFAULT = 'memory://memory';
 
     /**
-     * @var Container
-     */
-    private $container;
-
-    /**
      * @param Container $container
      */
-    public function __construct(Container $container)
+    public function __construct(private Container $container)
     {
-        $this->container = $container;
     }
 
     /**
@@ -41,7 +35,7 @@ class TransportFactory
      *
      * @return Transport
      */
-    public function create(string $key, $config): Transport
+    public function create(string $key, string|array $config): Transport
     {
         if (is_array($config) && array_key_exists('url', $config)) {
             return $this->createFromUrl($config['url'], $config['options'] ?? []);
@@ -72,13 +66,10 @@ class TransportFactory
      */
     private function createFromUrl(string $url, array $options = []): Transport
     {
-        switch (parse_url($url, PHP_URL_SCHEME)) {
-            case 'amqp':
-                return AMQPTransport::create($url, $options);
-            case 'memory':
-                return new Transport\MemoryTransport();
-            default:
-                throw new Exception\BadTransportException($url);
-        }
+        return match (parse_url($url, PHP_URL_SCHEME)) {
+            'amqp' => AMQPTransport::create($url, $options),
+            'memory' => new Transport\MemoryTransport(),
+            default => throw new Exception\BadTransportException($url),
+        };
     }
 }

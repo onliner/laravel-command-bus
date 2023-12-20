@@ -19,10 +19,7 @@ class CommandBusProcessCommand extends Command
     protected $name = 'commands:process';
     protected $description = '';
 
-    /**
-     * @var Consumer|AMQPConsumer
-     */
-    private $consumer;
+    private ?Consumer $consumer = null;
 
     /**
      * @return array<array>
@@ -98,11 +95,7 @@ class CommandBusProcessCommand extends Command
 
         foreach ([SIGINT, SIGTERM] as $signal) {
             pcntl_signal($signal, function () {
-                if (!$this->consumer) {
-                    return;
-                }
-
-                $this->consumer->stop();
+                $this->consumer?->stop();
             });
         }
     }

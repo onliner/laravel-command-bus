@@ -19,11 +19,9 @@ class SerializerFactory
      */
     public static function create(string $type, array $options = []): Serializer
     {
-        switch ($type) {
-            case 'native':
-                return new Serializer\NativeSerializer();
-            default:
-                throw new Exception\UnknownSerializerException($type);
-        }
+        return match ($type) {
+            'native' => new Serializer\NativeSerializer(),
+            default => throw new Exception\UnknownSerializerException($type),
+        };
     }
 }
