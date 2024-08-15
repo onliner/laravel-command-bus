@@ -11,12 +11,6 @@ class SerializerFactory
 {
     public const DEFAULT = 'native';
 
-    /**
-     * @param string $type
-     * @param array  $options
-     *
-     * @return Serializer
-     */
     public static function create(string $type, array $options = []): Serializer
     {
         return match ($type) {

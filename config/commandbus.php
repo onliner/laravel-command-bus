@@ -23,10 +23,18 @@ return [
                         // 'key' => 'value',
                     ],
                 ],
+                // 'amqp' => [
+                //     'url' => 'amqp://guest:guest@localhost:5672/vhost',
+                //     'options' => [
+                //         'exchange' => 'commands',
+                //         'durable' => true,
+                //         'type' => 'topic',
+                //     ],
+                // ],
             ],
-            'routes' => [
-                '*' => 'memory',
-            ],
+            // 'routes' => [
+            //    '*' => 'memory',
+            // ],
         ],
         'consumer' => [
             'options' => [
@@ -35,7 +43,11 @@ return [
             ],
             'queues' => [
                 // 'pattern' => [
+                //     'name' => 'my-queue',
                 //     'durable' => true,
+                //     'bindings' => [
+                //         'exchange' => 'pattern',
+                //     ],
                 //     'args' => [
                 //         Queue::MAX_PRIORITY => 3,
                 //     ],
