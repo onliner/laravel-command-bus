@@ -7,7 +7,6 @@ namespace Onliner\Laravel\CommandBus\Console;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Onliner\CommandBus\Dispatcher;
-use Onliner\CommandBus\Remote\AMQP\AMQPConsumer;
 use Onliner\CommandBus\Remote\AMQP\Queue;
 use Onliner\CommandBus\Remote\Consumer;
 use Onliner\CommandBus\Remote\Transport;
@@ -38,15 +37,10 @@ class CommandBusProcessCommand extends Command
     {
         return [
             ['user', 'u', InputOption::VALUE_OPTIONAL, 'User for which run workers'],
+            ['exchange', 'e', InputOption::VALUE_OPTIONAL, 'Exchange to bind consumer queue'],
         ];
     }
 
-    /**
-     * @param Dispatcher $dispatcher
-     * @param Transport  $transport
-     *
-     * @return int
-     */
     public function handle(Dispatcher $dispatcher, Transport $transport): int
     {
         $this->setupUser();
@@ -62,6 +56,10 @@ class CommandBusProcessCommand extends Command
 
         $options['pattern'] = $pattern;
 
+        if (!isset($options['bindings'])) {
+            $options['bindings'] = $this->option('exchange') ?: $this->getDefaultExchange();
+        }
+
         $this->consumer = $transport->consume();
         $this->consumer->consume(Queue::create($options));
         $this->consumer->run($dispatcher, $config['options'] ?? []);
@@ -69,9 +67,6 @@ class CommandBusProcessCommand extends Command
         return 0;
     }
 
-    /**
-     * @return void
-     */
     private function setupUser(): void
     {
         $user = $this->option('user');
@@ -86,9 +81,6 @@ class CommandBusProcessCommand extends Command
         posix_setuid($data['uid']);
     }
 
-    /**
-     * @return void
-     */
     private function subscribeSignals(): void
     {
         pcntl_async_signals(true);
@@ -98,5 +90,18 @@ class CommandBusProcessCommand extends Command
                 $this->consumer?->stop();
             });
         }
+    }
+
+    private function getDefaultExchange(): string
+    {
+        $config = Config::get('commandbus.remote.transport');
+        $default = $config['default'] ?? null;
+        $connections = $config['connections'] ?? [];
+
+        if (empty($default) || !isset($connections[$default])) {
+            $default = array_key_first($connections);
+        }
+
+        return $connections[$default]['options']['exchange'];
     }
 }

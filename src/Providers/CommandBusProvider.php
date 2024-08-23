@@ -25,9 +25,6 @@ class CommandBusProvider extends ServiceProvider
         TAG_MIDDLEWARE = 'onliner.commandbus.middleware'
     ;
 
-    /**
-     * @return void
-     */
     public function boot(): void
     {
         $configPath = $this->app->basePath('config') . DIRECTORY_SEPARATOR . self::CONFIG_FILENAME;
@@ -43,46 +40,18 @@ class CommandBusProvider extends ServiceProvider
         }
     }
 
-    /**
-     * @return void
-     */
     public function register(): void
     {
-        $this->registerExtensions($this->config('extensions'));
-        $this->registerMiddlewares($this->config('middlewares'));
+        $this->app->tag($this->config('extensions'), [self::TAG_EXTENSION]);
+        $this->app->tag($this->config('middlewares'), [self::TAG_MIDDLEWARE]);
+
         $this->registerRemote($this->config('remote'));
         $this->registerRetries($this->config('retries'));
         $this->registerDispatcher($this->config('handlers'));
     }
 
     /**
-     * @param array $extensions
-     *
-     * @return void
-     */
-    private function registerExtensions(array $extensions): void
-    {
-        foreach ($extensions as $extension) {
-            $this->app->tag($extension, [self::TAG_EXTENSION]);
-        }
-    }
-
-    /**
-     * @param array $middlewares
-     *
-     * @return void
-     */
-    private function registerMiddlewares(array $middlewares): void
-    {
-        foreach ($middlewares as $middleware) {
-            $this->app->tag($middleware, [self::TAG_MIDDLEWARE]);
-        }
-    }
-
-    /**
-     * @param array $config
-     *
-     * @return void
+     * @param array<string, mixed> $config
      */
     private function registerRemote(array $config): void
     {
@@ -104,9 +73,7 @@ class CommandBusProvider extends ServiceProvider
     }
 
     /**
-     * @param array $config
-     *
-     * @return void
+     * @param array<string, mixed> $config
      */
     private function registerTransports(array $config): void
     {
@@ -133,10 +100,7 @@ class CommandBusProvider extends ServiceProvider
     }
 
     /**
-     * @param string $key
-     * @param array $transports
-     *
-     * @return Transport
+     * @param array<string, string> $transports
      */
     private function getTransportInstance(string $key, array $transports): Transport
     {
@@ -147,40 +111,17 @@ class CommandBusProvider extends ServiceProvider
         return $this->app->get($transports[$key]);
     }
 
-    /**
-     * Available config formats:
-     *
-     * [
-     *   'foo' => \App\CommandBus\Transport\RedisTransport::class,
-     *   'bar' => 'app.command_bus.transport.redis',
-     *   'baz' => 'amqp://localhost:5672',
-     *   'qux' => 'memory://memory',
-     *   'quz' => [
-     *     'url' => 'amqp://localhost:5672',
-     *     'options' => [
-     *       'exchange' => 'commands',
-     *     ],
-     *   ],
-     * ]
-     *
-     * @param string $key
-     * @param mixed $config
-     *
-     * @return string
-     */
-    private function registerTransportConnection(string $key, $config): string
+    private function registerTransportConnection(string $key, array|string $config): string
     {
         $name = sprintf('onliner.commandbus.transport.%s', $key);
 
-        $this->app->singleton($name, fn(Container $app) => (new TransportFactory($app))->create($key, $config));
+        $this->app->singleton($name, fn (Container $app) => (new TransportFactory($app))->create($key, $config));
 
         return $name;
     }
 
     /**
-     * @param array $serializer
-     *
-     * @return void
+     * @param array<string, mixed> $serializer
      */
     private function registerSerializer(array $serializer): void
     {
@@ -192,9 +133,7 @@ class CommandBusProvider extends ServiceProvider
     }
 
     /**
-     * @param array $config
-     *
-     * @return void
+     * @param array<string, mixed> $config
      */
     private function registerRetries(array $config): void
     {
@@ -213,9 +152,7 @@ class CommandBusProvider extends ServiceProvider
     }
 
     /**
-     * @param array $handlers
-     *
-     * @return void
+     * @param array<string, string> $handlers
      */
     private function registerDispatcher(array $handlers): void
     {
@@ -241,11 +178,6 @@ class CommandBusProvider extends ServiceProvider
         });
     }
 
-    /**
-     * @param string $section
-     *
-     * @return array
-     */
     private function config(string $section): array
     {
         return $this->app->get('config')->get('commandbus.' . $section, []);
