@@ -14,6 +14,12 @@
         "illuminate/redis": ">=6.0",
         "onliner/command-bus": "^1.1"
     },
+    "require-dev": {
+        "predis/predis": "^2.0.2"
+    },
+    "suggest": {
+        "predis/predis": "Required to use the redis reconnect middleware."
+    },
     "autoload": {
         "psr-4": {
             "Onliner\\Laravel\\CommandBus\\": "src"
