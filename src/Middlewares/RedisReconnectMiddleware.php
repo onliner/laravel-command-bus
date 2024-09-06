@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Onliner\Laravel\CommandBus\Middlewares;
 
-use Exception;
 use Illuminate\Redis\Connections\Connection;
+use Illuminate\Redis\Connections\PredisConnection;
 use Illuminate\Redis\RedisManager;
 use Onliner\CommandBus\Context;
 use Onliner\CommandBus\Middleware;
+use Predis\Connection\ConnectionException;
 
 class RedisReconnectMiddleware implements Middleware
 {
@@ -20,21 +21,24 @@ class RedisReconnectMiddleware implements Middleware
     {
         $connections = $this->redis->connections() ?: [];
 
-        foreach ($connections as $name => $connection) {
-            if (!$this->ping($connection)) {
-                $this->redis->purge($name);
-            }
+        foreach ($connections as $connection) {
+            $this->ping($connection);
         }
 
         $next($message, $context);
     }
 
-    private function ping(Connection $connection, string $msg = 'ok'): bool
+    private function ping(Connection $connection): void
     {
+        if (!$connection instanceof PredisConnection) {
+            return;
+        }
+
         try {
-            return $connection->ping($msg) === $msg;
-        } catch (Exception) {
-            return false;
+            $connection->ping();
+        } catch (ConnectionException) {
+            $connection->disconnect();
+            $connection->connect();
         }
     }
 }

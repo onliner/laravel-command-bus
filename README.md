@@ -22,7 +22,7 @@ composer require onliner/laravel-command-bus
 or add this code line to the `require` section of your `composer.json` file:
 
 ```
-"onliner/laravel-command-bus": "^0.2.0"
+"onliner/laravel-command-bus": "^1.1"
 ```
 
 Configuration
@@ -44,8 +44,8 @@ Released under the [MIT license](LICENSE).
 
 [version-badge]:    https://img.shields.io/packagist/v/onliner/laravel-command-bus.svg
 [version-link]:     https://packagist.org/packages/onliner/laravel-command-bus
-[downloads-badge]:  https://poser.pugx.org/onliner/laravel-command-bus/downloads.png
+[downloads-badge]:  https://poser.pugx.org/onliner/laravel-command-bus/downloads.svg
 [downloads-link]:   https://packagist.org/packages/onliner/laravel-command-bus
-[php-badge]:        https://img.shields.io/badge/php-7.2+-brightgreen.svg
+[php-badge]:        https://img.shields.io/badge/php-8.0+-brightgreen.svg
 [php-link]:         https://www.php.net/
 [license-badge]:    https://img.shields.io/badge/license-MIT-brightgreen.svg
