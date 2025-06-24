@@ -12,7 +12,7 @@
         "illuminate/support": ">=6.0",
         "illuminate/console": ">=6.0",
         "illuminate/redis": ">=6.0",
-        "onliner/command-bus": "^1.1.4"
+        "onliner/command-bus": "^1.1.5"
     },
     "require-dev": {
         "predis/predis": "^2.0.2"
