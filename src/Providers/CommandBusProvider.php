@@ -42,12 +42,14 @@ class CommandBusProvider extends ServiceProvider
 
     public function register(): void
     {
+        $middlewares = $this->middlewares();
+
         $this->app->tag($this->config('extensions'), [self::TAG_EXTENSION]);
-        $this->app->tag($this->config('middlewares'), [self::TAG_MIDDLEWARE]);
+        $this->app->tag(array_keys($middlewares), [self::TAG_MIDDLEWARE]);
 
         $this->registerRemote($this->config('remote'));
         $this->registerRetries($this->config('retries'));
-        $this->registerDispatcher($this->config('handlers'));
+        $this->registerDispatcher($this->config('handlers'), $middlewares);
     }
 
     /**
@@ -153,10 +155,11 @@ class CommandBusProvider extends ServiceProvider
 
     /**
      * @param array<string, string> $handlers
+     * @param array<string, int> $middlewares
      */
-    private function registerDispatcher(array $handlers): void
+    private function registerDispatcher(array $handlers, array $middlewares): void
     {
-        $this->app->singleton(Dispatcher::class, function (Container $app) use ($handlers) {
+        $this->app->singleton(Dispatcher::class, function (Container $app) use ($handlers, $middlewares) {
             $builder = new Builder();
 
             foreach ($handlers as $command => $class) {
@@ -171,11 +174,30 @@ class CommandBusProvider extends ServiceProvider
             }
 
             foreach ($app->tagged(self::TAG_MIDDLEWARE) as $middleware) {
-                $builder->middleware($middleware);
+                $builder->middleware($middleware, $middlewares[get_class($middleware)] ?? 0);
             }
 
             return $builder->build();
         });
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function middlewares(): array
+    {
+        $config = $this->config('middlewares');
+        $middlewares = [];
+
+        foreach ($config as $key => $value) {
+            if (is_string($key) && is_int($value)) {
+                $middlewares[$key] = $value;
+            } elseif (is_string($value) && is_int($key)) {
+                $middlewares[$value] = $key;
+            }
+        }
+
+        return $middlewares;
     }
 
     private function config(string $section): array
