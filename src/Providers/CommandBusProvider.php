@@ -21,7 +21,7 @@ class CommandBusProvider extends ServiceProvider
 {
     private const CONFIG_FILENAME = 'commandbus.php';
     private const
-        TAG_EXTENSION  = 'onliner.commandbus.extension',
+        TAG_EXTENSION = 'onliner.commandbus.extension',
         TAG_MIDDLEWARE = 'onliner.commandbus.middleware'
     ;
 
