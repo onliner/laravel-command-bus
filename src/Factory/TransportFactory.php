@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use Onliner\CommandBus\Remote\AMQP;
 use Onliner\CommandBus\Remote\Transport;
 use Onliner\Laravel\CommandBus\Exception;
+use Psr\Log\LoggerInterface;
 
 class TransportFactory
 {
@@ -67,6 +68,9 @@ class TransportFactory
             throw new InvalidArgumentException('AMQP exchange is not specified');
         }
 
-        return AMQP\Transport::create($url, $options['exchange'], $options['routes'] ?? []);
+        $logger = ($options['debug'] ?? false) ? $this->container->make(LoggerInterface::class) : null;
+        $router = new AMQP\SimpleRouter($options['exchange'], array_filter($options['routes'] ?? [], 'is_string'));
+
+        return new AMQP\Transport(AMQP\Connector::create($url), new AMQP\Packager(), $router, $logger);
     }
 }
