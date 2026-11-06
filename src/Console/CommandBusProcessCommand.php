@@ -54,6 +54,11 @@ class CommandBusProcessCommand extends Command
             'durable' => true,
         ];
 
+        if ($config['quorum'] ?? false) {
+            $options['durable'] = true;
+            $options['args']['x-queue-type'] = 'quorum';
+        }
+
         $options['pattern'] = $pattern;
 
         if (!isset($options['bindings'])) {
