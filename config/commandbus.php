@@ -37,6 +37,7 @@ return [
             // ],
         ],
         'consumer' => [
+            'quorum' => false,
             'options' => [
                 // AMQPConsumer::OPTION_ATTEMPTS => 10,
                 // AMQPConsumer::OPTION_INTERVAL => 1000,
